@@ -7,8 +7,7 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-./my-chat-backend/node_modules
-./my-chat-frontend/node_modules
+node_modules/
 dist
 dist-ssr
 *.local
