@@ -8,11 +8,11 @@
 </template>
 
 <script setup>
-import {ref,onMounted,watch, nextTick} from 'vue'
+import {ref,onMounted,watch} from 'vue'
 import {renderMarkdown} from '@/utils/renderer'
 import hljs from "highlight.js"
 import {appendAndHighlightChunk} from '@/utils/appendHighlight'
-import {renderMathJax,escapeBackslash} from '@/utils/mathjax'
+import {renderMathJax,escapeBackslash,hasUnclosedMath} from '@/utils/mathjax'
 
 let content=defineProps({
     //选项名需要和父组件的Props保持一致
@@ -36,6 +36,7 @@ let isCodeBlock = false;
 let CodeStartBuffer='';//缓存代码块起始部分，直到遇到\n结束
 let bufferedText = '';
 let rawDisplayEl = null;
+
 
 //监视pinia中AI回复的内容，一旦发生变化就渲染到组件中
 watch(()=>content.content,async (newVal,oldVal)=>{
@@ -63,11 +64,9 @@ watch(()=>content.content,async (newVal,oldVal)=>{
             }
             //渲染数学公式（若有）
             // 等待 DOM 完整更新
-            // nextTick(() => {
-            await nextTick();
-            renderMathJax(container.value)
-            // });
-            return
+            // await nextTick();
+            renderMathJax(container.value);
+            return;
         }
         //渲染新增的内容
         if(trunk.trim().includes("```") || CodeStartBuffer.length>0){
@@ -146,7 +145,7 @@ watch(()=>content.content,async (newVal,oldVal)=>{
             rawDisplayEl = document.querySelector('.raw-streaming');
             const newText = trunk;
             // 如果不是以空格或换行结尾，说明当前语句可能不完整（例如 markdown 语法还没结束）
-            if (!newText.endsWith('\n') && !newText.endsWith('\n\n')) {
+            if ((!newText.endsWith('\n') && !newText.endsWith('\n\n')) || hasUnclosedMath(bufferedText)) {
                 bufferedText += newText;
                 // 原样显示（未修饰）
                 if (!rawDisplayEl) {
@@ -179,6 +178,8 @@ watch(()=>content.content,async (newVal,oldVal)=>{
             console.log('渲染数学公式再Markdown后：',renderMarkdown(escapeBackslash(fullText)));
             // 更新 aiMsg.html（以便 Vue 响应式触发）
             container.value.insertAdjacentHTML('beforeend',rendered);
+            //渲染数学公式
+            renderMathJax(container.value);
         }
     }
 })

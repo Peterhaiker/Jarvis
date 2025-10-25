@@ -14,3 +14,21 @@ export function escapeBackslash(str) {
             .replace(/\\\[\s*\n\s*/g, '\\[')  // \[ 后的换行移除
             .replace(/\s*\n\s*\\\]/g, '\\]'); // \] 前的换行移除;
 }
+//用来检测缓冲区中的数学标识符是否完整，若不完整则不解析，继续进行接收
+export function hasUnclosedMath(fullText) {
+  // 统计各种公式标识符的出现次数
+  const inlineDollarCount = (fullText.match(/\$/g) || []).length;
+  const blockDollarCount = (fullText.match(/\$\$/g) || []).length;
+  const leftBracketCount = (fullText.match(/\\\[/g) || []).length;
+  const rightBracketCount = (fullText.match(/\\\]/g) || []).length;
+  const leftParenCount = (fullText.match(/\\\(/g) || []).length;
+  const rightParenCount = (fullText.match(/\\\)/g) || []).length;
+
+  // 检查是否有未闭合
+  if (inlineDollarCount % 2 !== 0) return true;
+  if (blockDollarCount % 2 !== 0) return true;
+  if (leftBracketCount > rightBracketCount) return true;
+  if (leftParenCount > rightParenCount) return true;
+
+  return false;
+}
