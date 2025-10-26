@@ -56,3 +56,21 @@ li code {
   border-radius: 4px;
   font-size: 0.9em;
 }
+/* 表格样式 */
+.ai-content table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ebeef5;
+}
+
+.ai-content th,
+.ai-content td {
+  border: 1px solid #ebeef5;
+  padding: 8px 12px;
+  color: #606266;
+}
+
+.ai-content th {
+  background-color: #f9fafc;
+  font-weight: 600;
+}

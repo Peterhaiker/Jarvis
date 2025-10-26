@@ -8,11 +8,14 @@
 </template>
 
 <script setup>
-import {ref,onMounted,watch} from 'vue'
+import {ref,onMounted,watch, nextTick} from 'vue'
 import {renderMarkdown} from '@/utils/renderer'
 import hljs from "highlight.js"
 import {appendAndHighlightChunk} from '@/utils/appendHighlight'
 import {renderMathJax,escapeBackslash,hasUnclosedMath} from '@/utils/mathjax'
+import {normalizeMarkdownTables,hasUnclosedTable} from '@/utils/renderTable'
+
+
 
 let content=defineProps({
     //选项名需要和父组件的Props保持一致
@@ -43,7 +46,7 @@ watch(()=>content.content,async (newVal,oldVal)=>{
     if(newVal){
         //仅获取新增的值，避免重复渲染。后面的正则为了渲染数学公式时，去掉$首尾的空行
         const trunk=newVal.slice(oldVal.length);
-        // console.log("trunk AIMessage.vue=",trunk);
+        console.log("trunk AIMessage.vue=",trunk,'ASCII码:',Array.from(trunk).map(ch => ch.charCodeAt(0)));
         //如果是流式结束标志，直接渲染
         if(trunk.endsWith("[DONE]\n")){
             console.log("✅ 监视：Stream done");
@@ -64,7 +67,7 @@ watch(()=>content.content,async (newVal,oldVal)=>{
             }
             //渲染数学公式（若有）
             // 等待 DOM 完整更新
-            // await nextTick();
+            await nextTick();
             renderMathJax(container.value);
             return;
         }
@@ -74,7 +77,7 @@ watch(()=>content.content,async (newVal,oldVal)=>{
                 //代表首次进入代码块
                 isCodeBlock = !isCodeBlock;
             }                
-            // console.log('进入代码块状态:', isCodeBlock,'CodeStartBuffer=',CodeStartBuffer);
+            console.log('进入代码块状态:', isCodeBlock,'CodeStartBuffer=',CodeStartBuffer);
             // 代码块开始
             if(isCodeBlock){
                 // console.log("trunk ASCII码=",Array.from(trunk).map(ch => ch.charCodeAt(0)));
@@ -145,8 +148,13 @@ watch(()=>content.content,async (newVal,oldVal)=>{
             rawDisplayEl = document.querySelector('.raw-streaming');
             const newText = trunk;
             // 如果不是以空格或换行结尾，说明当前语句可能不完整（例如 markdown 语法还没结束）
-            if ((!newText.endsWith('\n') && !newText.endsWith('\n\n')) || hasUnclosedMath(bufferedText)) {
+            if ((!newText.endsWith('\n') && !newText.endsWith('\n\n')) || hasUnclosedMath(bufferedText+newText) || hasUnclosedTable(bufferedText+newText) || (bufferedText.length<10)) {
+                //不是完整语句或者缓存的字符数量<10个，缓存起来，等待下一次读取
                 bufferedText += newText;
+                if(hasUnclosedMath(bufferedText+newText) || hasUnclosedTable(bufferedText+newText)){
+                    //如果包含未关闭的数学公式，缓存起来，等待下一次读取，不要输出数学公式的原样形式
+                    return;
+                }
                 // 原样显示（未修饰）
                 if (!rawDisplayEl) {
                     rawDisplayEl = document.createElement('span');
@@ -172,13 +180,10 @@ watch(()=>content.content,async (newVal,oldVal)=>{
                 rawDisplayEl = null;
             }
             // 渲染 Markdown
-            console.log('原始 Markdown 内容：',fullText);
-            console.log('先渲染数学公式后的内容：',escapeBackslash(fullText));
             const rendered = renderMarkdown(escapeBackslash(fullText));
-            console.log('渲染数学公式再Markdown后：',renderMarkdown(escapeBackslash(fullText)));
-            // 更新 aiMsg.html（以便 Vue 响应式触发）
             container.value.insertAdjacentHTML('beforeend',rendered);
             //渲染数学公式
+            await nextTick();
             renderMathJax(container.value);
         }
     }
@@ -209,4 +214,24 @@ watch(()=>content.content,async (newVal,oldVal)=>{
     word-break: break-word; /* 兼容性换行 */
     overflow-wrap: break-word; /* 标准换行 */
 }
+.ai-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+  font-size: 15px;
+}
+
+.ai-content th,
+.ai-content td {
+  border: 1px solid #ccc;
+  padding: 6px 10px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.ai-content th {
+  background-color: #f7f7f7;
+  font-weight: 600;
+}
+
 </style>

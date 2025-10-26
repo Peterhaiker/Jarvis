@@ -34,14 +34,16 @@ export async function fetchChatStream(userInput){
         buffer = parts.pop(); // 可能是未完成的一部分，留给下次循环
         for (const part of parts) {
         if (part.startsWith("data: ")) {
-            const data = part.slice(6);
+            let data = part.slice(6);
             //流式结束标志
             if (data === "[DONE]") {
                 // console.log("✅ Stream done");
                 aiMsg.content+="[DONE]\n"
                 aiMsg.html=renderMarkdown(aiMsg.content);
-            }
-            else{
+            }else{
+                if(data.includes("[HEARTBEAT]")){
+                    data=data.replace("[HEARTBEAT]","");
+                }
                 aiMsg.content += data.replace(/\\n/g, "\n");
                 // console.log("data=",data);
             }

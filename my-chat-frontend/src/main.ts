@@ -15,7 +15,9 @@ import "@fontsource/inter/500.css";
 import "@fontsource/inter/700.css";
 //引入pinia
 import { createPinia } from 'pinia'
-
+//引入katex（表格美化css）
+import 'katex/dist/katex.min.css'
+import 'highlight.js/styles/github.css'
 
 //创建pinia实例
 const pinia = createPinia()

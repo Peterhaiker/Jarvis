@@ -16,7 +16,6 @@ export function escapeBackslash(str) {
 }
 //用来检测缓冲区中的数学标识符是否完整，若不完整则不解析，继续进行接收
 export function hasUnclosedMath(fullText) {
-  // 统计各种公式标识符的出现次数
   const inlineDollarCount = (fullText.match(/\$/g) || []).length;
   const blockDollarCount = (fullText.match(/\$\$/g) || []).length;
   const leftBracketCount = (fullText.match(/\\\[/g) || []).length;
@@ -24,11 +23,18 @@ export function hasUnclosedMath(fullText) {
   const leftParenCount = (fullText.match(/\\\(/g) || []).length;
   const rightParenCount = (fullText.match(/\\\)/g) || []).length;
 
-  // 检查是否有未闭合
+  // 成对匹配检查
   if (inlineDollarCount % 2 !== 0) return true;
   if (blockDollarCount % 2 !== 0) return true;
   if (leftBracketCount > rightBracketCount) return true;
   if (leftParenCount > rightParenCount) return true;
 
+  // 新增时序检查：
+  // 如果文本以 "$$" 结尾，但后面还没有空格、换行或内容，
+  // 那么暂时视为未闭合（等待下一块）
+  if (/\$\s*$/.test(fullText) || /\$\$\s*$/.test(fullText)) {
+    return true;
+  }
   return false;
 }
+
