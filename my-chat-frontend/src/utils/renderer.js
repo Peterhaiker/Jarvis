@@ -2,11 +2,13 @@ import MarkdownIt from "markdown-it"
 import mila from "markdown-it-link-attributes"
 import katex from "markdown-it-katex"
 import * as markdownItTable from "markdown-it-multimd-table";
-const markdownItTablePlugin = markdownItTable.default || markdownItTable;
 import hljs from "highlight.js"
 import "highlight.js/styles/atom-one-light.css"
 import "katex/dist/katex.min.css"
+// 测试新的代码渲染函数
+import { highlightCode } from "@/utils/CodeHighlightUtil.js"
 
+const markdownItTablePlugin = markdownItTable.default || markdownItTable;
 // 独立 highlight 函数，避免循环引用
 function safeHighlight(str, lang) {
   const language = lang && hljs.getLanguage(lang) ? lang : "plaintext"
@@ -24,7 +26,8 @@ const md = new MarkdownIt({
   linkify: true,
   typographer: true,
   breaks: true,
-  highlight: safeHighlight,
+  highlight: highlightCode,
+  // highlight: safeHighlight,
 })
   .use(mila, {
     attrs: {
