@@ -2,37 +2,38 @@ import hljs from "highlight.js"
 import "highlight.js/styles/atom-one-light.css"
 
 /**
- * 独立高亮函数（含行号 + 复制按钮）
+ * 创建代码容器（含复制按钮，语言标签）
  * @param {string} code - 代码内容
  * @param {string} lang - 语言（可选）
  * @returns {string} 渲染后的 HTML 片段
  */
-export function highlightCode(code, lang = "plaintext") {
+export function CreateCodeContainer(code, lang = "plaintext") {
   // 判断语言是否存在
   const validLang = lang && hljs.getLanguage(lang) ? lang : "plaintext"
-  let highlighted = ""
-  try {
-    highlighted =
-      validLang === "plaintext"
-        ? hljs.highlightAuto(code).value
-        : hljs.highlight(code, { language: validLang }).value
-  } catch (err) {
-    console.error("代码高亮出错:", err)
-    highlighted = escapeHtml(code)
-  }
-
+    let highlighted = ""
+    if(!code || code.trim() === ""){
+        highlighted="";
+    }else{
+        try {
+            highlighted =
+            validLang === "plaintext"
+                ? hljs.highlightAuto(code).value
+                : hljs.highlight(code, { language: validLang }).value
+        } catch (err) {
+            console.error("代码高亮出错:", err)
+            highlighted = escapeHtml(code)
+        }
+    }
   // 行号处理，添加行号
-  const lines = highlighted.split(/\r?\n/)
-  const numbered = lines
-    .map(
-      (line, i) =>
-        `<span class="line"><span class="line-number">${i + 1}</span><span class="code-line">${line}</span></span>`
-    )
-    .join("\n")
-
+  // const lines = highlighted.split(/\r?\n/)
+  // const numbered = lines
+  //   .map(
+  //     (line, i) =>
+  //       `<span class="line"><span class="line-number">${i + 1}</span><span class="code-line">${line}</span></span>`
+  //   )
+  //   .join("\n")
   // 生成语言标签
   const langLabel = validLang === "plaintext" ? "Text" : validLang
-
   // 生成最终 HTML
   return `
   <div class="code-block-container">
@@ -40,7 +41,7 @@ export function highlightCode(code, lang = "plaintext") {
       <span class="code-lang">${langLabel}</span>
       <button class="copy-btn" onclick="copyCode(this)">Copy</button>
     </div>
-    <pre class="hljs"><code class="hljs language-${validLang}">${numbered}</code></pre>
+    <pre class="hljs"><code class="hljs language-${validLang}">${highlighted}</code></pre>
   </div>`
 }
 

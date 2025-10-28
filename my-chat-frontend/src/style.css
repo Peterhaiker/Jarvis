@@ -13,19 +13,9 @@ html, body ,#app{
   font-size: 16px;
 }
 
-/* 块级代码块：另起一行显示 */
-pre {
-  display: block;
-  white-space: pre-wrap;
-  word-break: break-word;
-  border-radius: 10px;
-  padding: 0px;
-  overflow-x: auto;
-  transition: all 0.3s ease;
-  line-height: 1.6;
-  /* font-family: "JetBrains Mono", monospace; */
-}
-/* 行内代码和块代码 */
+
+
+/* 行内代码 */
 code{
   font-family: Consolas, Monaco, "Courier New", monospace;
   background-color: rgba(27, 31, 35, 0.05);
@@ -37,15 +27,63 @@ code{
   white-space: break-spaces;
 }
 
-/* 块代码：小块显示 */
+/* 块代码：另起一行显示 */
+/* 快代码最上层容器 */
+.code-block-container {
+  position: relative;
+  background: #f8f9fa;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  margin: 1em 0;
+  overflow: hidden;
+}
+/* 代码块标题栏 */
+.code-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #e9ecef;
+  font-size: 0.85rem;
+  color: #555;
+  padding: 0.4em 0.8em;
+  border-bottom: 1px solid #ddd;
+}
+/* 语言标识符 */
+.code-lang {
+  font-weight: 500;
+  text-transform: capitalize;
+}
+/* 复制按钮 */
+.copy-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: #007bff;
+  transition: color 0.3s;
+}
+.copy-btn:hover {
+  color: #0056b3;
+}
+.copy-btn.copied {
+  color: #28a745;
+}
+pre {
+  display: block;
+  white-space: pre-wrap;
+  word-break: break-word;
+  padding: 0px;
+  overflow-x: auto;
+  line-height: 1.6;
+  transition: all 0.3s ease;
+}
 pre code.hljs {
-  background-color: rgba(233, 231, 231, 0.4);
-  /* color:#d4d4d4; */
-  padding: 2px 4px;
-  border-radius: 15px;
   font-family: 'Fira Code', 'Consolas', 'Monaco', monospace;
-  font-size: 0.9em;
   min-height: 1.8em;
+  border-radius: 0px;
+  padding: 2px 4px;
+  font-size: 0.9em;
+  background-color: rgba(233, 231, 231, 0.4);
   transition: background-color 0.2s ease;
 }
 
@@ -56,6 +94,34 @@ li code {
   border-radius: 4px;
   font-size: 0.9em;
 }
+
+
+pre.hljs {
+  margin: 0;
+  /* padding: 0.75em 1em; */
+  overflow-x: auto;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.line {
+  display: block;
+  white-space: pre;
+}
+
+.line-number {
+  display: inline-block;
+  width: 2em;
+  color: #aaa;
+  text-align: right;
+  margin-right: 0.8em;
+  user-select: none;
+}
+
+.code-line {
+  display: inline;
+}
+
 /* 表格样式 */
 .ai-content table {
   width: 100%;
