@@ -47,7 +47,7 @@ watch(()=>content.content,async (newVal,oldVal)=>{
     if(newVal){
         //仅获取新增的值，避免重复渲染。后面的正则为了渲染数学公式时，去掉$首尾的空行
         const trunk=newVal.slice(oldVal.length);
-        console.log("trunk AIMessage.vue=",trunk/*,'ASCII码:',Array.from(trunk).map(ch => ch.charCodeAt(0))*/);
+        // console.log("trunk AIMessage.vue=",trunk/*,'ASCII码:',Array.from(trunk).map(ch => ch.charCodeAt(0))*/);
         //如果是流式结束标志，直接渲染
         if(trunk.endsWith("[DONE]\n")){
             console.log("✅ 监视：Stream done");

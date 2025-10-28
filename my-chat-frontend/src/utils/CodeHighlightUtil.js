@@ -24,14 +24,6 @@ export function CreateCodeContainer(code, lang = "plaintext") {
             highlighted = escapeHtml(code)
         }
     }
-  // 行号处理，添加行号
-  // const lines = highlighted.split(/\r?\n/)
-  // const numbered = lines
-  //   .map(
-  //     (line, i) =>
-  //       `<span class="line"><span class="line-number">${i + 1}</span><span class="code-line">${line}</span></span>`
-  //   )
-  //   .join("\n")
   // 生成语言标签
   const langLabel = validLang === "plaintext" ? "Text" : validLang
   // 生成最终 HTML
