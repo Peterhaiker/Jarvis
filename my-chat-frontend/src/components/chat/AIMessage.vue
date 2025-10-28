@@ -47,7 +47,7 @@ watch(()=>content.content,async (newVal,oldVal)=>{
     if(newVal){
         //仅获取新增的值，避免重复渲染。后面的正则为了渲染数学公式时，去掉$首尾的空行
         const trunk=newVal.slice(oldVal.length);
-        // console.log("trunk AIMessage.vue=",trunk/*,'ASCII码:',Array.from(trunk).map(ch => ch.charCodeAt(0))*/);
+        console.log("trunk AIMessage.vue=",trunk/*,'ASCII码:',Array.from(trunk).map(ch => ch.charCodeAt(0))*/);
         //如果是流式结束标志，直接渲染
         if(trunk.endsWith("[DONE]\n")){
             console.log("✅ 监视：Stream done");
@@ -156,48 +156,48 @@ watch(()=>content.content,async (newVal,oldVal)=>{
             return;
         }
         // 这里是 AI 新生成的文字(非代码块)
-        // if (!isCodeBlock) {
-        //     rawDisplayEl = document.querySelector('.raw-streaming');
-        //     const newText = trunk;
-        //     // 如果不是以空格或换行结尾，说明当前语句可能不完整（例如 markdown 语法还没结束）
-        //     if ((!newText.endsWith('\n') && !newText.endsWith('\n\n')) || hasUnclosedMath(TextBuffer+newText) || hasUnclosedTable(TextBuffer+newText) || (TextBuffer.length<10)) {
-        //         //不是完整语句或者缓存的字符数量<10个，缓存起来，等待下一次读取
-        //         TextBuffer += newText;
-        //         if(hasUnclosedMath(TextBuffer+newText) || hasUnclosedTable(TextBuffer+newText)){
-        //             //如果包含未关闭的数学公式，缓存起来，等待下一次读取，不要输出数学公式的原样形式
-        //             return;
-        //         }
-        //         // 原样显示（未修饰）
-        //         if (!rawDisplayEl) {
-        //             rawDisplayEl = document.createElement('span');
-        //             rawDisplayEl.className = 'raw-streaming';
-        //             rawDisplayEl.textContent = TextBuffer;
-        //             container.value.appendChild(rawDisplayEl);
-        //         } else {
-        //             rawDisplayEl.textContent += newText;
-        //         }
-        //         // 不进行 markdown 渲染
-        //         return;
-        //     }
-        //     // 到这里说明语句完整，可以进行 Markdown 解析
-        //     let fullText = TextBuffer + newText;
-        //     if(fullText.trim().endsWith('[DONE]\n')){
-        //         // 移除 [DONE] 标志
-        //         fullText = fullText.trim().replace('[DONE]', '');
-        //     }
-        //     TextBuffer = '';
-        //     // 先清理掉原始显示区
-        //     if (rawDisplayEl) {
-        //         rawDisplayEl.remove();
-        //         rawDisplayEl = null;
-        //     }
-        //     // 渲染 Markdown
-        //     // const rendered = renderMarkdown(escapeBackslash(fullText));
-        //     // container.value.insertAdjacentHTML('beforeend',rendered);
-        //     //渲染数学公式
-        //     await nextTick();
-        //     renderMathJax(container.value);
-        // }
+        if (!isCodeBlock) {
+            rawDisplayEl = document.querySelector('.raw-streaming');
+            const newText = trunk;
+            // 如果不是以空格或换行结尾，说明当前语句可能不完整（例如 markdown 语法还没结束）
+            if ((!newText.endsWith('\n') && !newText.endsWith('\n\n')) || hasUnclosedMath(TextBuffer+newText) || hasUnclosedTable(TextBuffer+newText) || (TextBuffer.length<10)) {
+                //不是完整语句或者缓存的字符数量<10个，缓存起来，等待下一次读取
+                TextBuffer += newText;
+                if(hasUnclosedMath(TextBuffer+newText) || hasUnclosedTable(TextBuffer+newText)){
+                    //如果包含未关闭的数学公式，缓存起来，等待下一次读取，不要输出数学公式的原样形式
+                    return;
+                }
+                // 原样显示（未修饰）
+                if (!rawDisplayEl) {
+                    rawDisplayEl = document.createElement('span');
+                    rawDisplayEl.className = 'raw-streaming';
+                    rawDisplayEl.textContent = TextBuffer;
+                    container.value.appendChild(rawDisplayEl);
+                } else {
+                    rawDisplayEl.textContent += newText;
+                }
+                // 不进行 markdown 渲染
+                return;
+            }
+            // 到这里说明语句完整，可以进行 Markdown 解析
+            let fullText = TextBuffer + newText;
+            if(fullText.trim().endsWith('[DONE]\n')){
+                // 移除 [DONE] 标志
+                fullText = fullText.trim().replace('[DONE]', '');
+            }
+            TextBuffer = '';
+            // 先清理掉原始显示区
+            if (rawDisplayEl) {
+                rawDisplayEl.remove();
+                rawDisplayEl = null;
+            }
+            // 渲染 Markdown
+            const rendered = renderMarkdown(escapeBackslash(fullText));
+            container.value.insertAdjacentHTML('beforeend',rendered);
+            //渲染数学公式
+            await nextTick();
+            renderMathJax(container.value);
+        }
     }
 })
 </script>
