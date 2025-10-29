@@ -1,0 +1,10 @@
+export const StateType = {
+  TEXT: "TEXT",
+  CODE_BLOCK: "CODE_BLOCK",
+  INLINE_CODE: "INLINE_CODE",
+  TABLE: "TABLE",
+  QUOTE: "QUOTE",
+  LIST: "LIST",
+  FORMULA: "FORMULA",
+  CHART: "CHART",
+};
